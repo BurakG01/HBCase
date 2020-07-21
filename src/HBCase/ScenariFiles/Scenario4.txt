@@ -1,0 +1,8 @@
+create_product P12 100 1000
+create_order P12 10
+increase_time 1
+create_campaign C12 P12 10 20 100
+create_order P12 10
+increase_time 1
+get_product_info P12
+get_campaign_info C12

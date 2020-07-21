@@ -1,13 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using HBCase.Services;
+using HBCase.Domain.Interfaces;
+using HBCase.Domain.Services;
 using Xunit;
 
 namespace HBCaseUnitTests
 {
-    public class OrderServiceTests: BaseServiceTest
+    public class OrderServiceTests
     {
+        public readonly IOrderService OrderService;
+        public readonly IProductService ProductService;
+        public readonly ICampaignService CampaignService;
+
+        public OrderServiceTests()
+        {
+            ProductService = new ProductService();
+            CampaignService = new CampaignService(ProductService);
+            OrderService = new OrderService(ProductService, CampaignService);
+        }
         [Fact]
         public void CreateOrder_With_Invalid_Properties_Should_Throw_Exception()
         {
@@ -33,6 +42,12 @@ namespace HBCaseUnitTests
 
             Assert.Equal(expectedOrderQuantityInPerPeriodOfCampaign, OrderService.GetOrderQuantityInPerPeriodOfCampaign());
           
+        }
+        private void CreateProductCampaignAndOrder()
+        {
+            ProductService.CreateProduct("create_product P11 100 1000");
+            CampaignService.CreateCampaign("create_campaign C11 P11 10 20 100");
+            OrderService.CreateOrder("create_order P11 10");
         }
 
     }

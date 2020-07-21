@@ -1,6 +1,7 @@
 ﻿using System;
+using HBCase.Domain.Interfaces;
+using HBCase.Domain.Services;
 using HBCase.Scenario;
-using HBCase.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HBCase
@@ -9,15 +10,11 @@ namespace HBCase
     {
         static void Main(string[] args)
         {
-
             var scenarioOperation = InitializeServices().GetService<IScenarioReader>();
 
             scenarioOperation.ReadScenarios();
 
             Console.ReadLine();
-
-
-
         }
 
         private static ServiceProvider InitializeServices()

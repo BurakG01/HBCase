@@ -1,31 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using HBCase.Domain.Interfaces;
 using HBCase.Domain.Models;
 
-namespace HBCase.Services
+namespace HBCase.Domain.Services
 {
-    public interface IOrderService
-    {
-        void CreateOrder(string createOrderCommand);
-        int GetOrderQuantityInPerPeriodOfCampaign();
-        void SetZeroOrderQuantityInPerPeriodOfCampaign();
-        public Order GetOrder();
-    }
     public class OrderService : IOrderService
     {
-
         private Order Order;
-        private int orderQuantityInPerPeriodOfCampaign;
+        private int _orderQuantityInPerPeriodOfCampaign;
         private readonly IProductService _productService;
         private readonly ICampaignService _campaignService;
-
         public OrderService(IProductService productService, ICampaignService campaignService)
         {
             _productService = productService;
             _campaignService = campaignService;
         }
-
         public void CreateOrder(string createOrderCommand)
         {
             Order = CreateOrderByParsing(createOrderCommand);
@@ -34,7 +23,7 @@ namespace HBCase.Services
 
             if (_campaignService.IsCampaignExist(Order.ProductCode))
             {
-                orderQuantityInPerPeriodOfCampaign += Order.Quantity;
+                _orderQuantityInPerPeriodOfCampaign += Order.Quantity;
 
                 _campaignService.IncreaseTotalSalesCountAndTurnover(Order.Quantity);
             }
@@ -44,19 +33,16 @@ namespace HBCase.Services
         }
         public int GetOrderQuantityInPerPeriodOfCampaign()
         {
-            return orderQuantityInPerPeriodOfCampaign;
+            return _orderQuantityInPerPeriodOfCampaign;
         }
-
         public void SetZeroOrderQuantityInPerPeriodOfCampaign()
         {
-            orderQuantityInPerPeriodOfCampaign = 0;
+            _orderQuantityInPerPeriodOfCampaign = 0;
         }
-
         public Order GetOrder()
         {
             return Order;
         }
-
         private Order CreateOrderByParsing(string createOrderCommand)
         {
             var orderProperties = createOrderCommand.Split(' ');

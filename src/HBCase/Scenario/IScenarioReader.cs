@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using HBCase.Services;
+using HBCase.Domain.Interfaces;
 
 namespace HBCase.Scenario
 {
@@ -18,6 +17,7 @@ namespace HBCase.Scenario
         private readonly IProductService _productService;
         private readonly ICampaignService _campaignService;
         private readonly IOrderService _orderService;
+        private readonly int _fileNameCharacterSize=13;
 
         public ScenarioReader(IProductService productService, ICampaignService campaignService, IOrderService orderService)
         {
@@ -27,23 +27,25 @@ namespace HBCase.Scenario
         }
         public void ReadScenarios()
         {
-            var filePaths = new string[] { Directory.GetCurrentDirectory() + @"\Scenarios\Scenario1.txt" ,
-                Directory.GetCurrentDirectory() + @"\Scenarios\Scenario2.txt" ,
-                Directory.GetCurrentDirectory() + @"\Scenarios\Scenario3.txt" ,
-                Directory.GetCurrentDirectory() + @"\Scenarios\Scenario4.txt" ,
-                Directory.GetCurrentDirectory() + @"\Scenarios\Scenario5.txt" };
+           
+            var  basePath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())));
+
+            var filePaths = new string[] { basePath + @"\ScenarioFiles\Scenario1.txt",
+                basePath + @"\ScenarioFiles\Scenario2.txt" ,
+                basePath + @"\ScenarioFiles\Scenario3.txt" ,
+                basePath + @"\ScenarioFiles\Scenario4.txt" ,
+                basePath + @"\ScenarioFiles\Scenario5.txt" };
 
             foreach (var filePath in filePaths)
             {
                 ApplyScenario(filePath);
             }
         }
-
         private void ApplyScenario(string filePath)
         {
-            var fileName = filePath.Substring(filePath.Length - 13);
+            var fileName = filePath.Substring(filePath.Length - _fileNameCharacterSize);
 
-            Console.WriteLine($" Output of {fileName} File");
+            Console.WriteLine($"Output of {fileName} File");
 
             ReadCommandsFromFile(filePath);
 
@@ -90,7 +92,7 @@ namespace HBCase.Scenario
                         break;
 
                     case "get_product_info":
-                        // Generic bir control yazılabilir her bir command için
+                       
                         if (commandProperties.Length > 1)
                         {
                             var productCode = commandProperties[1];
@@ -138,8 +140,6 @@ namespace HBCase.Scenario
             }
 
         }
-
-
         private void SleepScreen()
         {
             Thread.Sleep(100);

@@ -1,13 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using HBCase.Services;
+using HBCase.Domain.Interfaces;
+using HBCase.Domain.Services;
 using Xunit;
 
 namespace HBCaseUnitTests
 {
-    public class ProductServiceTests : BaseServiceTest
+    public class ProductServiceTests 
     {
+        public readonly IOrderService OrderService;
+        public readonly IProductService ProductService;
+        public readonly ICampaignService CampaignService;
+
+        public ProductServiceTests()
+        {
+            ProductService = new ProductService();
+            CampaignService = new CampaignService(ProductService);
+            OrderService = new OrderService(ProductService, CampaignService);
+        }
+
         [Fact]
         public void CreateProduct_With_Invalid_Properties_Should_Throw_Exception()
         {

@@ -1,29 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using HBCase.Domain.Interfaces;
 using HBCase.Domain.Models;
 using HBCase.Enums;
 
-namespace HBCase.Services
+namespace HBCase.Domain.Services
 {
-    public interface ICampaignService
-    {
-        public void CreateCampaign(string createCampaignCommand);
-        public void IncreaseTotalSalesCountAndTurnover(int quantity);
-        public void DecreaseCampaignDuration(int hour);
-        bool IsCampaignExist(string productCode);
-        int GetTargetSalesCountInHour();
-        void GetCampaignInfo();
-        Campaign GetCampaign();
-    }
-
     public class CampaignService : ICampaignService
     {
         private readonly IProductService _productService;
         private int _targetSalesCountInHour;
         private Campaign Campaign;
-
-
         public CampaignService(IProductService productService)
         {
             _productService = productService;
@@ -35,9 +21,8 @@ namespace HBCase.Services
             Console.WriteLine($"Campaign created; name {Campaign.Name}, product {Campaign.ProductCode}, duration {Campaign.Duration}, limit {Campaign.PriceManipulationLimit}, target sales count {Campaign.TargetSalesCount}");
 
             SetTargetSalesCountInHour(Campaign.TargetSalesCount, Campaign.Duration);
-            // todo :product var mi kontrolu yapilabilir.
-            _productService.SetMinMaxPrice(Campaign.PriceManipulationLimit);
-
+           
+            _productService.SetMinMaxPrice(Campaign.PriceManipulationLimit); 
         }
         private Campaign CreateCampaignByParsing(string createProductCommand)
         {
@@ -73,25 +58,29 @@ namespace HBCase.Services
         {
             return (Campaign != null) && (Campaign.ProductCode == productCode) && (Campaign.Status == Status.Active);
         }
-        // bu methodun ismi değiştirlebilir
         public void IncreaseTotalSalesCountAndTurnover(int quantity) 
         {
             var currentPriceOfProduct = _productService.GetProduct().Price;
+
             Campaign.TotalSalesCount += quantity;
+
             Campaign.Turnover = Campaign.Turnover + (currentPriceOfProduct * quantity);
+
             Campaign.Turnover = Decimal.Round(Campaign.Turnover, 3);
+
             Campaign.AverageItemPrice = Campaign.Turnover / Campaign.TotalSalesCount;
+
             Campaign.AverageItemPrice = Decimal.Round(Campaign.AverageItemPrice, 3);
-        }
+        } 
         public void DecreaseCampaignDuration(int hour)
         {
             Campaign.Duration -= hour;
+
             if (Campaign.Duration <= 0)
             {
                 Campaign.Status = Status.Passive;
             }
         }
-
         public Campaign GetCampaign()
         {
             return Campaign;

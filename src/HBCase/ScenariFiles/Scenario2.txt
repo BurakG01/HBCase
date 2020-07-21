@@ -1,0 +1,14 @@
+create_product P4 100 1000
+create_campaign C1 P4 5 20 100
+get_product_info P4
+increase_time 1
+create_order P4 3
+get_product_info P4
+increase_time 1
+get_product_info P4
+increase_time 1
+get_product_info P4
+increase_time 1
+get_product_info P4
+increase_time 2
+get_campaign_info C1

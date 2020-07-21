@@ -1,64 +1,52 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using HBCase.Domain.Interfaces;
 using HBCase.Domain.Models;
 
-namespace HBCase.Services
+namespace HBCase.Domain.Services
 {
-    public interface IProductService
-    {
-        void CreateProduct(string createProductCommand);
-        void GetProductInfo(string productCode);
-        void TryToChangeProductPrice(int orderCountInCampaignPeriod, int targetSalesCountInHour);
-        void TryToDecreaseProductStock(int quantity);
-        Product GetProduct();
-        void SetMinMaxPrice(int campaignManipulationLimit);
-    }
-
     public class ProductService : IProductService
     {
         private Product Product;
         private decimal _minPrice;
         private decimal _maxPrice;
         private decimal _decreaseOrIncreasePrice = 5;
-
+        private readonly int _manipulationPercentage = 100;
         public void CreateProduct(string createProductCommand)
         {
             Product = CreateProductByParsing(createProductCommand);
 
             Console.WriteLine($"Product created ; code {Product.ProductCode}, price {Product.Price} , stock {Product.Stock}");
         }
-
         public void GetProductInfo(string productCode)
         {
             if (Product.ProductCode == null || Product.ProductCode != productCode)
             {
                 throw new Exception("There is no such a product");
             }
+
             Console.WriteLine($"Product {Product.ProductCode} info ; price {Product.Price} stock {Product.Stock}");
         }
-
         public void TryToDecreaseProductStock(int quantity)
         {
             if (quantity > Product.Stock)
             {
                 throw new Exception($"There is no enough stock");
             }
+
             Product.Stock -= quantity;
         }
-
         public Product GetProduct()
         {
             return Product;
         }
-
         public void SetMinMaxPrice(int campaignManipulationPercentage)
         {
-            var manipulationPrice = Product.Price * campaignManipulationPercentage / 100;
+            var manipulationPrice = Product.Price * campaignManipulationPercentage / _manipulationPercentage;
+
             _minPrice = Product.Price - manipulationPrice;
+
             _maxPrice = Product.Price + manipulationPrice;
         }
-
         private Product CreateProductByParsing(string createProductCommand)
         {
             var productProperties = createProductCommand.Split(' ');
@@ -78,7 +66,6 @@ namespace HBCase.Services
                 throw new Exception("Invalid Format For Product Properties");
             }
         }
-
         public void TryToChangeProductPrice(int orderCountInCampaignPeriod, int targetSalesCountInHour)
         {
             if (orderCountInCampaignPeriod == targetSalesCountInHour) return;
@@ -96,6 +83,5 @@ namespace HBCase.Services
                 Product.Price = increasedPrice <= _maxPrice ? increasedPrice : _maxPrice;
             }
         }
-
     }
 }
