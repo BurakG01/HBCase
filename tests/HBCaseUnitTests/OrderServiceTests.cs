@@ -7,47 +7,57 @@ namespace HBCaseUnitTests
 {
     public class OrderServiceTests
     {
-        public readonly IOrderService OrderService;
-        public readonly IProductService ProductService;
-        public readonly ICampaignService CampaignService;
+        private readonly IOrderService _orderService;
+        private readonly IProductService _productService;
+        private readonly ICampaignService _campaignService;
 
         public OrderServiceTests()
         {
-            ProductService = new ProductService();
-            CampaignService = new CampaignService(ProductService);
-            OrderService = new OrderService(ProductService, CampaignService);
-        }
-        [Fact]
-        public void CreateOrder_With_Invalid_Properties_Should_Throw_Exception()
-        {
-            Assert.Throws<Exception>(() => OrderService.CreateOrder("create_order P11 1asd0"));
+            _productService = new ProductService();
+            _campaignService = new CampaignService(_productService);
+            _orderService = new OrderService(_productService, _campaignService);
         }
 
         [Fact]
-        public void CreateOrder_With_Valid_Properties()
+        public void Create_Order_Should_Throw_Exception()
+        {
+            Assert.Throws<Exception>(() => _orderService.CreateOrder("create_order P11 1asd0"));
+        }
+        [Fact]
+        public void Order_Should_Be_Created()
         {
             CreateProductCampaignAndOrder();
-            var order = OrderService.GetOrder();
+            var order = _orderService.GetOrder();
 
            Assert.Equal( 10, order.Quantity);
            Assert.Equal("P11",order.ProductCode);
         }
-
         [Fact]
-        public void CreateOrder_After_Campaign_Created()
+        public void OrderQuantityInPerPeriodOfCampaign_Should_Be_Set_When_Campaign_Exist()
         {
             CreateProductCampaignAndOrder();
 
             var expectedOrderQuantityInPerPeriodOfCampaign = 10;
 
-            Assert.Equal(expectedOrderQuantityInPerPeriodOfCampaign, OrderService.GetOrderQuantityInPerPeriodOfCampaign());
+            Assert.Equal(expectedOrderQuantityInPerPeriodOfCampaign, _orderService.GetOrderQuantityInPerPeriodOfCampaign());
           
+        }
+        [Fact]
+        public void OrderQuantityInPerPeriodOfCampaign_Should_Be_Set_Zero()
+        {
+            CreateProductCampaignAndOrder();
+
+            var expectedOrderQuantityInPerPeriodOfCampaign = 0;
+
+            _orderService.SetZeroOrderQuantityInPerPeriodOfCampaign();
+          
+            Assert.Equal(expectedOrderQuantityInPerPeriodOfCampaign, _orderService.GetOrderQuantityInPerPeriodOfCampaign());
         }
         private void CreateProductCampaignAndOrder()
         {
-            ProductService.CreateProduct("create_product P11 100 1000");
-            CampaignService.CreateCampaign("create_campaign C11 P11 10 20 100");
-            OrderService.CreateOrder("create_order P11 10");
+            _productService.CreateProduct("create_product P11 100 1000");
+            _campaignService.CreateCampaign("create_campaign C11 P11 10 20 100");
+            _orderService.CreateOrder("create_order P11 10");
         }
 
     }

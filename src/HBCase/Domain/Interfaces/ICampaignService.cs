@@ -10,6 +10,7 @@ namespace HBCase.Domain.Interfaces
         bool IsCampaignExist(string productCode);
         int GetTargetSalesCountInHour();
         void GetCampaignInfo();
+        void SetAverageItemPrice();
         Campaign GetCampaign();
     }
 }

@@ -26,6 +26,8 @@ namespace HBCase.Domain.Services
                 _orderQuantityInPerPeriodOfCampaign += Order.Quantity;
 
                 _campaignService.IncreaseTotalSalesCountAndTurnover(Order.Quantity);
+
+                _campaignService.SetAverageItemPrice();
             }
 
             Console.WriteLine($"Order created; product {Order.ProductCode}, quantity {Order.Quantity}");

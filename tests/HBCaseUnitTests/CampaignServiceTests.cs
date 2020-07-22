@@ -8,27 +8,27 @@ namespace HBCaseUnitTests
 {
     public class CampaignServiceTests
     {
-        public readonly IOrderService OrderService;
-        public readonly IProductService ProductService;
-        public readonly ICampaignService CampaignService;
+        private readonly IOrderService _orderService;
+        private readonly IProductService _productService;
+        private readonly ICampaignService _campaignService;
 
         public CampaignServiceTests()
         {
-            ProductService = new ProductService();
-            CampaignService = new CampaignService(ProductService);
-            OrderService = new OrderService(ProductService, CampaignService);
-        }
-        [Fact]
-        public void Create_Campaign_With_Invalid_Properties_Should_Throw_Exception()
-        {
-            Assert.Throws<Exception>(() => CampaignService.CreateCampaign("create_campaign C1 P4 5 20 sds"));
+            _productService = new ProductService();
+            _campaignService = new CampaignService(_productService);
+            _orderService = new OrderService(_productService, _campaignService);
         }
 
         [Fact]
-        public void Create_Campaign_With_Valid_Properties()
+        public void Create_Campaign_Should_Throw_Exception()
+        {
+            Assert.Throws<Exception>(() => _campaignService.CreateCampaign("create_campaign C1 P4 5 20 sds"));
+        }
+        [Fact]
+        public void Campaign_Should_Be_Created()
         {
             CreateProductCampaignAndOrder();
-            var campaign = CampaignService.GetCampaign();
+            var campaign = _campaignService.GetCampaign();
             Assert.Equal("C11",campaign.Name);
             Assert.Equal("P11",campaign.ProductCode);
             Assert.Equal(10,campaign.Duration);
@@ -37,32 +37,39 @@ namespace HBCaseUnitTests
 
         }
         [Fact]
-        public void Increase_Campaign_TotalSalesCountAndTurnover_When_Order_Created()
+        public void Campaign_TotalSalesCount_And_Turnover_Should_Be_Increased_When_Order_Created()
         {
             CreateProductCampaignAndOrder();
-            var campaign = CampaignService.GetCampaign();
+            var campaign = _campaignService.GetCampaign();
             Assert.Equal(10,campaign.TotalSalesCount);
             Assert.Equal(1000,campaign.Turnover);
         }
-
         [Fact]
-        public void Campaign_Status_Passive_After_Many_Increase_Time_Command_Arrived()
+        public void Campaign_AverageItemPrice_Should_Be_Set_When_Order_Created()
+        {
+            CreateProductCampaignAndOrder();
+            var campaign = _campaignService.GetCampaign();
+            Assert.Equal(100, campaign.AverageItemPrice);
+           
+        }
+        [Fact]
+        public void Campaign_Status_Should_Be_Passive_After_Many_Increase_Time_Command_Arrived()
         {
             CreateProductCampaignAndOrder();
 
             for (int i = 0; i < 10; i++)
             {
-                CampaignService.DecreaseCampaignDuration(1);
+                _campaignService.DecreaseCampaignDuration(1);
             }
-            var campaign = CampaignService.GetCampaign();
+            var campaign = _campaignService.GetCampaign();
             Assert.Equal(Status.Passive,campaign.Status);
 
         }
         private void CreateProductCampaignAndOrder()
         {
-            ProductService.CreateProduct("create_product P11 100 1000");
-            CampaignService.CreateCampaign("create_campaign C11 P11 10 20 100");
-            OrderService.CreateOrder("create_order P11 10");
+            _productService.CreateProduct("create_product P11 100 1000");
+            _campaignService.CreateCampaign("create_campaign C11 P11 10 20 100");
+            _orderService.CreateOrder("create_order P11 10");
         }
     }
 }

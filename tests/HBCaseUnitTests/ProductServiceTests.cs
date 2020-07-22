@@ -7,59 +7,55 @@ namespace HBCaseUnitTests
 {
     public class ProductServiceTests 
     {
-        public readonly IOrderService OrderService;
-        public readonly IProductService ProductService;
-        public readonly ICampaignService CampaignService;
+        private readonly IOrderService _orderService;
+        private readonly IProductService _productService;
 
         public ProductServiceTests()
         {
-            ProductService = new ProductService();
-            CampaignService = new CampaignService(ProductService);
-            OrderService = new OrderService(ProductService, CampaignService);
+            _productService = new ProductService();
+            ICampaignService campaignService = new CampaignService(_productService);
+            _orderService = new OrderService(_productService, campaignService);
         }
 
         [Fact]
-        public void CreateProduct_With_Invalid_Properties_Should_Throw_Exception()
+        public void CreateProduct_Should_Throw_Exception()
         {
-            Assert.Throws<Exception>(() => ProductService.CreateProduct("create_product P11 asd 1000"));
+            Assert.Throws<Exception>(() => _productService.CreateProduct("create_product P11 asd 1000"));
         }
-
         [Fact]
-        public void CreateProduct_With_Valid_Properties()
+        public void Product_Should_Be_Created()
         {
-            ProductService.CreateProduct("create_product P11 100 1000");
-            var product = ProductService.GetProduct();
+            _productService.CreateProduct("create_product P11 100 1000");
+            var product = _productService.GetProduct();
             Assert.Equal("P11",product.ProductCode);
             Assert.Equal(100,product.Price);
             Assert.Equal(1000,product.Stock);
 
         }
         [Fact]
-        public void Product_Stock_Decrease_When_Order_Created()
+        public void Product_Stock_Should_Decrease_When_Order_Created()
         {
-            ProductService.CreateProduct("create_product P11 100 1000");
-            OrderService.CreateOrder("create_order P11 10");
+            _productService.CreateProduct("create_product P11 100 1000");
+            _orderService.CreateOrder("create_order P11 10");
             int expectedProductStock = 990;
-            var product = ProductService.GetProduct();
+            var product = _productService.GetProduct();
             Assert.Equal(expectedProductStock, product.Stock);
         }
-
         [Fact]
         public void Product_Price_Change_When_Time_Increase_In_Campaign_Period()
         {
-            ProductService.CreateProduct("create_product P11 100 1000");
-            ProductService.TryToChangeProductPrice(10,15);
+            _productService.CreateProduct("create_product P11 100 1000");
+            _productService.TryToChangeProductPrice(10,15);
             var expectedProductPrice = 95;
-            var product = ProductService.GetProduct();
+            var product = _productService.GetProduct();
             Assert.Equal(expectedProductPrice,product.Price);
         }
-
         [Fact]
-        public void TryToProductStock_Decrease_Should_Throw_Exception_When_Quantity_Greater_Then_Stock()
+        public void Decrease_ProductStock_Should_Throw_Exception_When_Quantity_Greater_Then_Stock()
         {
-            ProductService.CreateProduct("create_product P11 100 40");
+            _productService.CreateProduct("create_product P11 100 40");
 
-            Assert.Throws<Exception>(() => ProductService.TryToDecreaseProductStock(50));
+            Assert.Throws<Exception>(() => _productService.TryToDecreaseProductStock(50));
         }
 
     }

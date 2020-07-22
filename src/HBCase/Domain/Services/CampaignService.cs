@@ -67,11 +67,13 @@ namespace HBCase.Domain.Services
             Campaign.Turnover = Campaign.Turnover + (currentPriceOfProduct * quantity);
 
             Campaign.Turnover = Decimal.Round(Campaign.Turnover, 3);
-
+        }
+        public void SetAverageItemPrice()
+        {
             Campaign.AverageItemPrice = Campaign.Turnover / Campaign.TotalSalesCount;
 
             Campaign.AverageItemPrice = Decimal.Round(Campaign.AverageItemPrice, 3);
-        } 
+        }
         public void DecreaseCampaignDuration(int hour)
         {
             Campaign.Duration -= hour;

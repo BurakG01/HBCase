@@ -10,9 +10,9 @@ namespace HBCase
     {
         static void Main(string[] args)
         {
-            var scenarioOperation = InitializeServices().GetService<IScenarioReader>();
+            var scenarioOperation = InitializeServices().GetService<IScenarioOperations>();
 
-            scenarioOperation.ReadScenarios();
+            scenarioOperation.StartScenarios();
 
             Console.ReadLine();
         }
@@ -24,6 +24,8 @@ namespace HBCase
                 .AddScoped<ICampaignService,CampaignService>()
                 .AddScoped<IOrderService,OrderService>()
                 .AddTransient<IScenarioReader,ScenarioReader>()
+                .AddTransient<IScenarioApplier, ScenarioApplier>()
+                .AddTransient<IScenarioOperations, ScenarioOperations>()
                 .BuildServiceProvider();
             return services;
         }
