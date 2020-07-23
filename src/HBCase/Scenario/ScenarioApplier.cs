@@ -88,10 +88,10 @@ namespace HBCase.Scenario
                                 var orderCountInCampaignPeriod = orderQuantityInPerPeriodOfCampaign / hour;
 
                                 _productService.TryToChangeProductPrice(orderCountInCampaignPeriod, targetSalesCountInHour);
-
-                                _orderService.SetZeroOrderQuantityInPerPeriodOfCampaign();
                             }
                         }
+                        _orderService.SetZeroOrderQuantityInPerPeriodOfCampaign();
+
                         SleepScreen();
                         break;
 
