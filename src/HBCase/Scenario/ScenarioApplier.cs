@@ -69,6 +69,8 @@ namespace HBCase.Scenario
 
                     case "increase_time":
 
+                        Console.WriteLine(command);
+
                         var hour = int.Parse(commandProperties[1]);
 
                         var product = _productService.GetProduct();

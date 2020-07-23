@@ -36,7 +36,7 @@ namespace HBCaseUnitTests
             Assert.Throws<InvalidDataException>(() => _scenarioApplier.ApplyCommands(commands));
         }
         [Fact]
-        public void Applier_Should_Apply_All_Commands_Correctly()
+        public void Applier_Should_Apply_All_Commands_Respectively()
         {
             var commands = new List<string>
             {
